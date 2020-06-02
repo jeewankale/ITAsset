@@ -19,14 +19,14 @@ import {
 import DataTable from "react-data-table-component";
 import axios from "axios";
 
-class brand extends Component {
+class organization extends Component {
   constructor(props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
     this.toggleFade = this.toggleFade.bind(this);
     this.togglePrimary = this.togglePrimary.bind(this);
-    this.addBrand = this.addBrand.bind(this);
+    this.addOrganization = this.addOrganization.bind(this);
     this.modalType = "";
     this.state = {
       collapse: true,
@@ -34,7 +34,7 @@ class brand extends Component {
       timeout: 300,
       modal: false,
       primary: false,
-      brandListing: [],
+      organizationListing: [],
       name: "",
       description: "",
       id: "",
@@ -67,7 +67,7 @@ class brand extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  editBrand(props) {
+  editOrganization(props) {
     console.log("edit clicked", props.id);
     this.modalType = "Update";
     this.setState({
@@ -77,9 +77,9 @@ class brand extends Component {
       primary: !this.state.primary,
     });
   }
-  deleteBrand(props) {
+  deleteOrganization(props) {
     console.log("delete clicked", props.id);
-    let url = "http://localhost:8030/brand/delete/" + props.id;
+    let url = process.env.REACT_APP_ASSET_SERVICE+"/organization/delete/" + props.id;
     axios
       .post(url)
       .then((result) => {
@@ -88,7 +88,7 @@ class brand extends Component {
       })
       .catch(console.log);
   }
-  addBrand() {
+  addOrganization() {
     let myForm = document.getElementById("form");
     let formData = new FormData(myForm);
     var object = {};
@@ -101,9 +101,9 @@ class brand extends Component {
     };
     let url;
     if (this.modalType === "Add") {
-      url = process.env.REACT_APP_ASSET_SERVICE+"/brand/add";
+      url = process.env.REACT_APP_ASSET_SERVICE+"/organization/add";
     } else {
-      url = process.env.REACT_APP_ASSET_SERVICE+"/brand/update";
+      url = process.env.REACT_APP_ASSET_SERVICE+"/organization/update";
     }
     axios
       .post(url, json, config)
@@ -113,12 +113,12 @@ class brand extends Component {
       .catch(console.log);
   }
   componentDidMount() {
-    fetch("http://localhost:8030/brand/findAll")
+    fetch(process.env.REACT_APP_ASSET_SERVICE+"/organization/findAll")
       .then((res) => res.json())
       .then((data) => {
         console.log(data.result);
-        this.setState({ brandListing: data.result });
-        console.log(this.state.brandListing);
+        this.setState({ organizationListing: data.result });
+        console.log(this.state.organizationListing);
       })
       .catch(console.log);
   }
@@ -132,7 +132,7 @@ class brand extends Component {
               raised
               primary
               onClick={() => {
-                this.editBrand(props);
+                this.editOrganization(props);
               }}
             >
              <i className="fa fa-eye"></i>
@@ -143,7 +143,7 @@ class brand extends Component {
               raised
               primary
               onClick={() => {
-                this.deleteBrand(props);
+                this.deleteOrganization(props);
               }}
             >
               <i className="fa fa-trash"></i>
@@ -182,9 +182,9 @@ class brand extends Component {
           toggle={this.togglePrimary}
           className={"modal-primary modal-lg"}
         >
-          <Form id="form" className="form-horizontal" onSubmit={this.addBrand}>
+          <Form id="form" className="form-horizontal" onSubmit={this.addOrganization}>
             <ModalHeader toggle={this.togglePrimary}>
-              {this.modalType} Brand
+              {this.modalType} Organization
             </ModalHeader>
             <ModalBody>
               <Row>
@@ -255,12 +255,12 @@ class brand extends Component {
         </Modal>
 
         <DataTable
-          title="Brand's"
+          title="Organization's"
           striped="true"
           highlightOnHover="true"
           pagination="true"
           columns={columns}
-          data={this.state.brandListing}
+          data={this.state.organizationListing}
           customStyles={customStyles}
           theme="solarized"
         />
@@ -269,4 +269,4 @@ class brand extends Component {
   }
 }
 
-export default brand;
+export default organization;

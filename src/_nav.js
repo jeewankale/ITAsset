@@ -8,17 +8,27 @@ export default {
     {
       name: 'Master',
       url: '/master',
-      icon: 'icon-puzzle',
+      icon: 'fa fa-wpforms',
       children: [
         {
           name: 'Brand',
           url: '/master/brand',
-          icon: 'icon-puzzle',
+          icon: 'fa fa-edit',
         },
         {
           name: 'Category',
           url: '/master/category',
-          icon: 'icon-puzzle',
+          icon: 'fa fa-edit',
+        },
+        {
+          name: 'Organization',
+          url: '/master/organization',
+          icon: 'fa fa-edit',
+        },
+        {
+          name: 'Asset',
+          url: '/master/assetEntry',
+          icon: 'fa fa-edit',
         },
         
       ],

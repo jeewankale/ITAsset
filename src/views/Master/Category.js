@@ -27,6 +27,7 @@ class category extends Component {
     this.toggleFade = this.toggleFade.bind(this);
     this.togglePrimary = this.togglePrimary.bind(this);
     this.addCategory = this.addCategory.bind(this);
+    this.modalType = "";
     this.state = {
       collapse: true,
       fadeIn: true,
@@ -37,6 +38,7 @@ class category extends Component {
       type: "",
       name: "",
       description: "",
+      id: "",
     };
   }
   toggle() {
@@ -46,6 +48,7 @@ class category extends Component {
   }
 
   togglePrimary() {
+    this.modalType = "Add";
     this.setState({
       primary: !this.state.primary,
     });
@@ -64,9 +67,28 @@ class category extends Component {
     */
     this.setState({ [e.target.name]: e.target.value });
   };
-  editCategory=(name)=>{
-    console.log("edit clicked",name);
-  };
+  editCategory(props) {
+    console.log("edit clicked", props.id);
+    this.modalType = "Update";
+    this.setState({
+      name: props.name,
+      description: props.description,
+      type: props.type,
+      id: props.id,
+      primary: !this.state.primary,
+    });
+  }
+  deleteCategory(props) {
+    console.log("delete clicked", props.id);
+    let url = process.env.REACT_APP_ASSET_SERVICE+"/category/delete/" + props.id;
+    axios
+      .post(url)
+      .then((result) => {
+        console.log(result);
+        window.location.reload(false);
+      })
+      .catch(console.log);
+  }
   addCategory() {
     let myForm = document.getElementById("form");
     let formData = new FormData(myForm);
@@ -79,15 +101,22 @@ class category extends Component {
       headers: { "content-type": "application/json" },
     };
     console.log("add button clicked" + this.state.name);
+    let url;
+    if (this.modalType === "Add") {
+      url = process.env.REACT_APP_ASSET_SERVICE+"/category/add";
+    } else {
+      url = process.env.REACT_APP_ASSET_SERVICE+"/category/update";
+    }
     axios
-      .post("http://localhost:8030/category/add", json, config)
+      .post(url, json, config)
       .then((result) => {
         console.log(result);
+        window.location.reload(false);
       })
       .catch(console.log);
   }
   componentDidMount() {
-    fetch("http://localhost:8030/category/findAll")
+    fetch(process.env.REACT_APP_ASSET_SERVICE+"/category/findAll")
       .then((res) => res.json())
       .then((data) => {
         console.log(data.result);
@@ -99,24 +128,28 @@ class category extends Component {
   render() {
     const columns = [
       {
-        cell: () => (
+        cell: (props) => (
           <ButtonGroup>
             <Button
-              class="btn btn-warning"
+              className="btn btn-warning"
               raised
-              primary
-              onClick={this.editCategory(this.name)}
+              primary="true"
+              onClick={() => {
+                this.editCategory(props);
+              }}
             >
-              Edit
+              <i className="fa fa-eye"></i>
             </Button>
             &nbsp;&nbsp;&nbsp;
             <Button
-              class="btn btn-warning"
+              className="btn btn-danger"
               raised
               primary
-              onClick={this.handleAction}
+              onClick={() => {
+                this.deleteCategory(props);
+              }}
             >
-              Delete
+              <i className="fa fa-trash"></i>
             </Button>
           </ButtonGroup>
         ),
@@ -148,10 +181,11 @@ class category extends Component {
         <Button
           color="primary"
           onClick={this.togglePrimary}
-          className="pull-right mr-1"
+          className="pull-right mr-1 mb-2"
         >
           Add <i className="fa fa-plus fa-sm"></i>
         </Button>
+        
         <br></br>
         <Modal
           isOpen={this.state.primary}
@@ -163,7 +197,9 @@ class category extends Component {
             className="form-horizontal"
             onSubmit={this.addCategory}
           >
-            <ModalHeader toggle={this.togglePrimary}>Add Category</ModalHeader>
+            <ModalHeader toggle={this.togglePrimary}>
+              {this.modalType} Category
+            </ModalHeader>
             <ModalBody>
               <Row>
                 <Col xs="12" sm="12">
@@ -180,6 +216,7 @@ class category extends Component {
                               onChange={this.onChange}
                               name="type"
                               id="type"
+                              value={this.state.type}
                             >
                               <option value="">Please Select</option>
                               <option value="Hardware">Hardware</option>
@@ -199,6 +236,7 @@ class category extends Component {
                               type="text"
                               id="name"
                               name="name"
+                              value={this.state.name}
                               onChange={this.onChange}
                               placeholder="Please enter name"
                               required
@@ -216,9 +254,23 @@ class category extends Component {
                             <textarea
                               type="select"
                               name="description"
+                              value={this.state.description}
                               onChange={this.onChange}
                               id="description"
                             ></textarea>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="12">
+                          <FormGroup>
+                            <Input
+                              type="hidden"
+                              id="id"
+                              name="id"
+                              value={this.state.id}
+                              onChange={this.onChange}
+                            />
                           </FormGroup>
                         </Col>
                       </Row>
@@ -229,7 +281,7 @@ class category extends Component {
             </ModalBody>
             <ModalFooter>
               <Button type="submit" color="primary">
-                Add
+                {this.modalType}
               </Button>{" "}
               <Button color="secondary">Cancel</Button>
             </ModalFooter>
@@ -237,7 +289,7 @@ class category extends Component {
         </Modal>
 
         <DataTable
-        id="catgoryTable"
+          id="catgoryTable"
           title="Category's"
           striped="true"
           highlightOnHover="true"
