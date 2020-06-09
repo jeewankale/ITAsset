@@ -79,7 +79,7 @@ class brand extends Component {
   }
   deleteBrand(props) {
     console.log("delete clicked", props.id);
-    let url = "http://localhost:8030/brand/delete/" + props.id;
+    let url = process.env.REACT_APP_ASSET_SERVICE+"/brand/delete/" + props.id;
     axios
       .post(url)
       .then((result) => {
@@ -113,7 +113,7 @@ class brand extends Component {
       .catch(console.log);
   }
   componentDidMount() {
-    fetch("http://localhost:8030/brand/findAll")
+    fetch(process.env.REACT_APP_ASSET_SERVICE+"/brand/findAll")
       .then((res) => res.json())
       .then((data) => {
         console.log(data.result);

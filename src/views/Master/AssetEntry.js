@@ -23,14 +23,40 @@ class organization extends Component {
       modal: false,
       primary: false,
       organizationListing: [],
+      categoryListing:[],
+      brandListing:[],
       name: "",
       type: "",
       category: "",
       invoiceNumber: "",
       purAmount: "",
       id: "",
+      optionItems:"",
     };
+    let initialcategory = [];
+    fetch(process.env.REACT_APP_ASSET_SERVICE+"/category/findAllCategory")
+        .then(response => {
+            return response.json();
+        }).then(data => {
+          initialcategory = data.result.map((categoryListing) => {
+            return categoryListing
+        });
+        console.log(initialcategory);
+        this.setState({
+          categoryListing: initialcategory,
+      });
+      console.log("mount function")
+    });
   }
+ 
+  onChange = (e) => {
+    /*
+      Because we named the inputs to match their
+      corresponding values in state, it's
+      super easy to update the state
+    */
+    this.setState({ [e.target.name]: e.target.value });
+  };
   addOrganization() {
     let myForm = document.getElementById("form");
     let formData = new FormData(myForm);
@@ -57,6 +83,15 @@ class organization extends Component {
   }
 
   render() {
+    let arrayOfData = this.state.categoryListing;
+    let options = arrayOfData.map((data) =>
+            <option 
+                key={data}
+                value={data}
+            >
+                {data}
+            </option>
+        );
     return (
       <div className="animated fadeIn">
         <Row>
@@ -99,10 +134,11 @@ class organization extends Component {
                           value={this.state.type}
                           required
                         >
-                          <option value="">Please Select</option>
-                          <option value="Hardware">Hardware</option>
+                           <option value="">Please Select</option>
+                          {/*<option value="Hardware">Hardware</option>
                           <option value="Software">Software</option>
-                          <option value="NonIT">NonIT</option>
+                          <option value="NonIT">NonIT</option> */}
+                          {options}
                         </Input>
                       </FormGroup>
                     </Col>
