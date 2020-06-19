@@ -13,7 +13,7 @@ import {
   Row,
 } from "reactstrap";
 import axios from "axios";
-class organization extends Component {
+class AssetEntry extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,13 +32,16 @@ class organization extends Component {
       modelNumber: "",
       serialNumber: "",
       invoiceNumber: "",
-      purAmount: "",
+      purchaseAmount: "",
       purchaseDate: "",
       expiryDate: "",
       vendor: "",
-      purchaseDocument: "",
+      purchaseDocument: null,
       description: "",
-      booleanwarrantyCheck: false,
+      isWarranty: false,
+      booleanwarrantyCheck:"",
+      warrantyYear:"",
+      warrantyMonth:"",
       warranty: "d-none",
       id: "",
       optionItems: "",
@@ -46,6 +49,8 @@ class organization extends Component {
       manufacturer: "",
       brandOptions: null,
     };
+    this.onChange=this.onChange.bind(this);
+    this.onFileChange=this.onFileChange.bind(this);
     let initialcategory = [];
     fetch(process.env.REACT_APP_ASSET_SERVICE + "/category/findAllCategory")
       .then((response) => {
@@ -86,17 +91,27 @@ class organization extends Component {
     */
     this.setState({ [e.target.name]: e.target.value });
   };
+  onFileChange=(e) =>{
+    e.preventDefault();
+    console.log(e.target.files[0]);
+    this.setState({
+      purchaseDocument:e.target.files[0]
+      });
+    
+  };
   warrantyCheck = (e) => {
     console.log("..", e.target.value);
     this.setState({
       booleanwarrantyCheck: !this.state.booleanwarrantyCheck,
     });
-    let checkbox = this.state.warrantyCheck;
-    if (checkbox) {
+    let checkbox = this.state.booleanwarrantyCheck;
+    if (!checkbox) {
+      console.log("true");
       this.setState({
-        warranty: "d-block",
+        warranty: "",
       });
     } else {
+      console.log("false");
       this.setState({
         warranty: "d-none",
       });
@@ -127,28 +142,24 @@ class organization extends Component {
   addAsset = (event) => {
     let myForm = document.getElementById("form");
     let formData = new FormData(myForm);
-    var object = {};
-    formData.forEach((value, key) => {
-      object[key] = value;
-    });
-    var json = JSON.stringify(object);
-    console.log(json);
-    event.preventDefault();
-    // const config = {
-    //   headers: { "content-type": "application/json" },
-    // };
-    // let url;
-    // if (this.modalType === "Add") {
-    //   url = process.env.REACT_APP_ASSET_SERVICE + "/organization/add";
-    // } else {
-    //   url = process.env.REACT_APP_ASSET_SERVICE + "/organization/update";
-    // }
-    // axios
-    //   .post(url, json, config)
-    //   .then((result) => {
-    //     console.log(result);
-    //   })
-    //   .catch(console.log);
+    // var object = {};
+    // formData.forEach((value, key) => {
+    //   object[key] = value;
+    // });
+    // var json = JSON.stringify(object);
+    // console.log(json);
+    // event.preventDefault();
+    const config = {
+      headers: { "content-type": "multipart/form-data" },
+    };
+    let url = process.env.REACT_APP_ASSET_SERVICE + "/asset/add";
+    console.log("URL:",url);
+    axios
+      .post(url, formData, config)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch(console.log);
   };
 
   render() {
@@ -163,7 +174,7 @@ class organization extends Component {
         <Row>
           <Col xs="12" sm="12" md="12" lg="12">
             <Card className="">
-              <Form action="" onSubmit={this.addAsset} method="post">
+              <Form id="form" className="form-horizontal"  onSubmit={this.addAsset}>
                 <CardHeader className="text-white  bg-primary">
                   <strong>Add Asset</strong>
                 </CardHeader>
@@ -294,16 +305,16 @@ class organization extends Component {
                     </Col>
                     <Col lg="4" sm="12" xs="12" md="6">
                       <FormGroup className="pr-1 mr-4">
-                        <Label htmlFor="purAmount" className="pr-1 mr-4">
+                        <Label htmlFor="purchaseAmount" className="pr-1 mr-4">
                           <strong>Purchase Amount</strong>
                         </Label>
                         <Input
                           type="text"
-                          id="purAmount"
-                          name="purAmount"
+                          id="purchaseAmount"
+                          name="purchaseAmount"
                           placeholder="Enter Purchase Amount"
                           onChange={this.onChange}
-                          value={this.state.purAmount}
+                          value={this.state.purchaseAmount}
                           required
                         />
                       </FormGroup>
@@ -317,6 +328,7 @@ class organization extends Component {
                           type="date"
                           id="purchaseDate"
                           name="purchaseDate"
+                          pattern="(?:19|20)\[0-9\]{2}-(?:(?:0\[1-9\]|1\[0-2\])/(?:0\[1-9\]|1\[0-9\]|2\[0-9\])|(?:(?!02)(?:0\[1-9\]|1\[0-2\])/(?:30))|(?:(?:0\[13578\]|1\[02\])-31))"
                           placeholder="Select Purchase Date"
                         />
                       </FormGroup>
@@ -362,8 +374,7 @@ class organization extends Component {
                           id="purchaseDocument"
                           name="purchaseDocument"
                           placeholder="Select Purchase Document"
-                          onChange={this.onChange}
-                          value={this.state.purchaseDocument}
+                          onChange={this.onFileChange}
                           required
                         />
                       </FormGroup>
@@ -395,7 +406,7 @@ class organization extends Component {
                         </Label>
                         <Input
                           type="checkbox"
-                          id="warrantyCheck"
+                          id="isWarranty"
                           name="warrantyCheck"
                           checked={this.state.booleanwarrantyCheck}
                           onChange={this.onChange}
@@ -420,6 +431,7 @@ class organization extends Component {
                           value={this.state.warrantyYear}
                         >
                           <option value="">Please Select</option>
+                          <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
@@ -430,6 +442,35 @@ class organization extends Component {
                           <option value="8">8</option>
                           <option value="9">9</option>
                           <option value="10">10</option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col lg="4" sm="12" xs="12" md="6">
+                      <FormGroup className="pr-1 mr-4">
+                        <Label htmlFor="warrantyMonth" className="pr-1 mr-4">
+                          <strong>Warranty Years</strong>
+                        </Label>
+                        <Input
+                          type="select"
+                          onChange={this.onChange}
+                          name="warrantyMonth"
+                          id="warrantyMonth"
+                          value={this.state.warrantyMonth}
+                        >
+                          <option value="">Please Select</option>
+                          <option value="0">0</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                          <option value="7">7</option>
+                          <option value="8">8</option>
+                          <option value="9">9</option>
+                          <option value="10">10</option>
+                          <option value="11">11</option>
+                          <option value="12">12</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -452,4 +493,4 @@ class organization extends Component {
   }
 }
 
-export default organization;
+export default AssetEntry;

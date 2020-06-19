@@ -25,13 +25,24 @@ export default {
           url: '/master/organization',
           icon: 'fa fa-edit',
         },
+      ],
+    },
+    {
+      name: 'AssetManagement',
+      url: '/master',
+      icon: 'fa fa-edit',
+      children: [
         {
-          name: 'Asset',
+          name: 'Add Asset',
           url: '/master/assetEntry',
           icon: 'fa fa-edit',
         },
-        
-      ],
+        {
+          name: 'Add Software',
+          url: '/master/addSoftware',
+          icon: 'fa fa-edit',
+        },
+      ]
     },
     {
       name: 'Reports',

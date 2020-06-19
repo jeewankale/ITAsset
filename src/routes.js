@@ -39,6 +39,7 @@ const Category=React.lazy(() => import('./views/Master/Category'));
 const Brand=React.lazy(() => import('./views/Master/Brand'));
 const Organization=React.lazy(() => import('./views/Master/Organization'));
 const AssetEntry=React.lazy(() => import('./views/Master/AssetEntry'));
+const AddSoftware=React.lazy(() => import('./views/Master/AddSoftware'));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -87,6 +88,7 @@ const routes = [
   {path:'/master/brand', exact: true, name: 'Brand', component: Brand},
   {path:'/master/organization', exact: true, name: 'Organization', component: Organization},
   {path:'/master/assetEntry', exact: true, name: 'AssetEntry', component: AssetEntry},
+  {path:'/master/addSoftware', exact: true, name: 'AddSoftware', component: AddSoftware},
 ];
 
 export default routes;
