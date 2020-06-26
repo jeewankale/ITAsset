@@ -13,15 +13,7 @@ import {
   Row,
 } from "reactstrap";
 import axios from "axios";
-//import MultipleValueTextInput from "react-multivalue-text-input";
-import { WithContext } from 'react-tag-input';
- 
-const KeyCodes = {
-  comma: 188,
-  enter: 13,
-};
- 
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
+import ReactTagInput from "./../../assets/util/ReactTagInput";
 class AddSoftware extends Component {
   constructor(props) {
     super(props);
@@ -40,7 +32,7 @@ class AddSoftware extends Component {
       edition: "",
       version: "",
       licenseType: "",
-      licence: [],
+      license: [],
       tags: [],
       purchaseAmount: "",
       purchaseDate: "",
@@ -61,9 +53,6 @@ class AddSoftware extends Component {
       brandOptions: null,
     };
     this.onChange = this.onChange.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-        this.handleAddition = this.handleAddition.bind(this);
-        this.handleDrag = this.handleDrag.bind(this);
     let type = "Software";
     let url =
       process.env.REACT_APP_ASSET_SERVICE +
@@ -105,55 +94,9 @@ class AddSoftware extends Component {
     */
     this.setState({ [e.target.name]: e.target.value });
   };
-//   handleDelete(i) {
-//     const { licence } = this.state;
-//     this.setState({
-//       licence: licence.filter((tag, index) => index !== i),
-//     });
-//     console.log(this.state.licence);
-// }
-
-// handleAddition(tag) {
-//   console.log(tag.text)
-//     this.setState(state => ({ licence: [...state.licence, tag] }));
-//     console.log(this.state.licence);
-// }
-// handleDrag(tag, currPos, newPos) {
-//   const licence = [...this.state.licence];
-//   const newlicenseKey = licence.slice();
-
-//   newlicenseKey.splice(currPos, 1);
-//   newlicenseKey.splice(newPos, 0, tag);
-
-//   // re-render
-//   this.setState({ licence: newlicenseKey });
-// }
-handleDelete(i,e) {
-  const { tags } = this.state;
-  this.setState({
-   tags: tags.filter((tag, index) => index !== i),
-  });
-   console.log('tags:=',this.state.tags);
-   this.setState({ [e.target.name]: e.target.value });
-}
-
-handleAddition(tag,e) {
-  
-  this.setState({ tags: [...this.state.tags, tag] });
-  console.log('tags:=',this.state.tags);
-  
-}
-
-handleDrag(tag, currPos, newPos) {
-  const tags = [...this.state.tags];
-  const newTags = tags.slice();
-
-  newTags.splice(currPos, 1);
-  newTags.splice(newPos, 0, tag);
-
-  // re-render
-  this.setState({ tags: newTags });
-}
+  handleTagsChange (tags) {
+    this.setState({ license: tags })
+  }
   changeLicenceType = (e) => {
     this.setState({ [e.target.name]: e.target.value });
     let checkbox = e.target.value;
@@ -181,7 +124,7 @@ handleDrag(tag, currPos, newPos) {
       })
     }
   };
-
+	
   addSoftware = (event) => {
     let myForm = document.getElementById("form");
     console.log(myForm);
@@ -207,8 +150,7 @@ handleDrag(tag, currPos, newPos) {
    };
 
   render() {
-    const { tags } = this.state;
-    return (
+     return (
       <div className="animated fadeIn">
         <Row>
           <Col xs="12" sm="12" md="12" lg="12">
@@ -349,20 +291,10 @@ handleDrag(tag, currPos, newPos) {
                     </Col>
                     <Col lg="4" sm="12" xs="12" md="6" className={this.state.isLicenceKey}>
                       <FormGroup className="pr-1 mr-4">
-                        <Label htmlFor="tags" className="pr-1 mr-4">
+                        <Label htmlFor="license" className="pr-1 mr-4">
                           <strong>Licence Keys</strong>
                         </Label>
-                        <WithContext tags={tags}
-                    handleDelete={this.handleDelete}
-                    handleAddition={this.handleAddition}
-                    handleDrag={this.handleDrag}
-                    delimiters={delimiters}
-                    placeholder="Enter License Keys"
-                    name="tags"
-                    id="tags"
-                    ref="tags"
-                    value={tags}
-                    />
+                        <ReactTagInput name="license" id="license" value={this.state.license} onChange={this.handleTagsChange} />
                         
                       </FormGroup>
                     </Col>
