@@ -18,6 +18,7 @@ import {
 } from "reactstrap";
 import DataTable from "react-data-table-component";
 import axios from "axios";
+import authHeader from './../../service/auth-header';
 
 class category extends Component {
   constructor(props) {
@@ -98,7 +99,9 @@ class category extends Component {
     });
     var json = JSON.stringify(object);
     const config = {
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json",
+      "Authorization":localStorage.getItem("user").accessToken,
+                },
     };
     console.log("add button clicked" + this.state.name);
     let url;
@@ -116,7 +119,12 @@ class category extends Component {
       .catch(console.log);
   }
   componentDidMount() {
-    fetch(process.env.REACT_APP_ASSET_SERVICE+"/category/findAll")
+    const user = JSON.parse(localStorage.getItem('user'));
+    const config = {
+      'Authorization': 'Bearer ' + user.accessToken,
+    };
+    axios
+      .get(process.env.REACT_APP_ASSET_SERVICE + "category/findAll",{ headers:config})
       .then((res) => res.json())
       .then((data) => {
         console.log(data.result);
