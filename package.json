@@ -27,7 +27,7 @@
     "font-awesome": "^4.7.0",
     "form-serialize": "^0.7.2",
     "js-base64": "^2.6.2",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",
